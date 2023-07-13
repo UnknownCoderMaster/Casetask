@@ -80,10 +80,10 @@ public class TeacherService : ITeacherService
     {
         var teachers = await TeacherRepository.GetAsync(null, null);
 
-        //foreach(var teacher in teachers)
-        //{
+        Expression<Func<Subject, bool>> filter;
 
-        //}
+        foreach (var teacher in teachers)
+            teacher.Subjects = await SubjectRepository.GetFilteredAsync(new[] { filter = s => s.TeacherId == teacher.Id }, null, null);
 
         return Mapper.Map<List<TeacherGet>>(teachers);
     }

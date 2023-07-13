@@ -7,5 +7,5 @@ public class Teacher : BaseEntity
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
     public DateTime BirthDate { get; set; }
-    public List<Subject> Subjects { get; set; } = new List<Subject> { };
+    public List<Subject> Subjects { get; set; } = default!;
 }
