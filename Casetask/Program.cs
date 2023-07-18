@@ -1,10 +1,9 @@
+using Casetask;
 using Casetask.Business;
 using Casetask.Common.Interfaces;
 using Casetask.Common.Model;
 using Casetask.Infrastructure;
-using Courseproject.API;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 DIConfiguration.RegisterServices(builder.Services);
 builder.Services.AddDbContext<ApplicationDbContext>(
     option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IGenericRepository<Teacher>, GenericRepository<Teacher>>();
 builder.Services.AddScoped<IGenericRepository<Subject>, GenericRepository<Subject>>();
+builder.Services.AddScoped<IGenericRepository<Student>, GenericRepository<Student>>();
 
 builder.Services.AddControllers();
 //builder.Services.AddControllers().AddJsonOptions(options =>

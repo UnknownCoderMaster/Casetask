@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Casetask.Common.Dtos.StudentDTOs;
 using Casetask.Common.Dtos.SubjectDtos;
 using Casetask.Common.Dtos.Teacher;
 using Casetask.Common.Model;
@@ -19,5 +20,10 @@ public class DtoEntityMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<SubjectUpdate, Subject>();
         CreateMap<Subject, SubjectGet>();
+
+        CreateMap<StudentCreate, Student>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<StudentUpdate, Student>();
+        CreateMap<Student, StudentGet>();
     }
 }

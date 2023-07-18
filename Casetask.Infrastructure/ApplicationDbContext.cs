@@ -30,7 +30,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Student>()
             .HasMany(s => s.Results)
             .WithOne(score => score.Student)
-            .HasForeignKey(s => s.StudentId);
+            .HasForeignKey(s => s.StudentId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         base.OnModelCreating(modelBuilder);
     }

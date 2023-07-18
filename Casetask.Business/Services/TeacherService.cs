@@ -73,6 +73,8 @@ public class TeacherService : ITeacherService
 
         var existingSubjects = await SubjectRepository.GetFilteredAsync(new[] { filter }, null, null);
 
+        entity.Subjects = existingSubjects;
+
         return Mapper.Map<TeacherGet>(entity);
     }
 

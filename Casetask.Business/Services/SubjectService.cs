@@ -62,7 +62,7 @@ public class SubjectService : ISubjectService
         if (existingSubject == null)
             throw new SubjectNotFoundException(subjectUpdate.Id);
 
-        var entity = Mapper.Map<Subject>(existingSubject);
+        var entity = Mapper.Map<Subject>(subjectUpdate);
         SubjectRepository.Update(entity);
         await SubjectRepository.SaveChangesAsync();
     }

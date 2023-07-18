@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-namespace Courseproject.API;
+namespace Casetask;
 
 public class ExceptionMiddleware
 {
@@ -54,7 +54,7 @@ public class ExceptionMiddleware
             await context.Response.WriteAsync(problemDetailsJson);
         }
 
-        catch (SubjectNotFoundException ex)
+        catch (StudentNotFoundException ex)
         {
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;

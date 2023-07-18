@@ -11,5 +11,6 @@ public class DIConfiguration
         services.AddAutoMapper(typeof(DtoEntityMapperProfile));
         services.AddScoped<ITeacherService, TeacherService>();
         services.AddScoped<ISubjectService, SubjectService>();
+        services.AddScoped<IStudentService, StudentService>();
     }
 }

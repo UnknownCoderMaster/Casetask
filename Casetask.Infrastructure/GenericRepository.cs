@@ -44,7 +44,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         IQueryable<T> query = DbSet;
 
-        query = query.Where(entity => entity.Id == id);
+        query = query.Where(entity => entity.Id == id).AsNoTracking();//adding no tracking
 
         foreach (var include in includes)
             query = query.Include(include);
