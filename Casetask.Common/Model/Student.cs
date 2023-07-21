@@ -8,6 +8,5 @@ public class Student : BaseEntity
     public string? Email { get; set; }
     public DateTime BirthDate { get; set; }
     public int StudentRegNumber { get; set; }
-    public List<Subject> Subjects { get; set; } = default!;
     public List<Score>? Results { get; set; } = default!;
 }

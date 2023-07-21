@@ -1,3 +1,5 @@
-﻿namespace Casetask.Common.Dtos.StudentDTOs;
+﻿using Casetask.Common.Dtos.SubjectDtos;
 
-public record StudentUpdate(int Id, string FirstName, string LastName, string PhoneNumber, string Email, DateTime BirthDate, int StudentRegNumber, List<SubjectDtos> Subjects);
+namespace Casetask.Common.Dtos.StudentDTOs;
+
+public record StudentUpdate(int Id, string FirstName, string LastName, string PhoneNumber, string Email, DateTime BirthDate, int StudentRegNumber, List<SubjectUpdate> Subjects);

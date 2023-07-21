@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddScoped<IGenericRepository<Teacher>, GenericRepository<Teacher>>();
 builder.Services.AddScoped<IGenericRepository<Subject>, GenericRepository<Subject>>();
 builder.Services.AddScoped<IGenericRepository<Student>, GenericRepository<Student>>();
+builder.Services.AddScoped<IGenericRepository<Score>, GenericRepository<Score>>();
 
 builder.Services.AddControllers();
 //builder.Services.AddControllers().AddJsonOptions(options =>

@@ -22,7 +22,8 @@ public class DtoEntityMapperProfile : Profile
         CreateMap<Subject, SubjectGet>();
 
         CreateMap<StudentCreate, Student>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.Results, opt => opt.Ignore());
         CreateMap<StudentUpdate, Student>();
         CreateMap<Student, StudentGet>();
     }

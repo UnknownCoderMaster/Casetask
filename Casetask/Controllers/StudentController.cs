@@ -31,6 +31,14 @@ public class StudentController : ControllerBase
         return Ok();
     }
 
+    [HttpDelete]
+    [Route("Delete")]
+    public async Task<IActionResult> DeleteStudent(StudentDelete studentDelete)
+    {
+        await StudentService.DeleteStudentAsync(studentDelete);
+        return Ok();
+    }
+
     [HttpGet]
     [Route("Get/{id}")]
     public async Task<IActionResult> GetStudent(int id)
@@ -45,13 +53,5 @@ public class StudentController : ControllerBase
     {
         var students = await StudentService.GetStudentsAsync();
         return Ok(students);
-    }
-
-    [HttpDelete]
-    [Route("Delete")]
-    public async Task<IActionResult> DeleteStudent(StudentDelete studentDelete)
-    {
-        await StudentService.DeleteStudentAsync(studentDelete);
-        return Ok();
     }
 }

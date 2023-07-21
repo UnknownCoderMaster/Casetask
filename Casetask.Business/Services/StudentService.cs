@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Casetask.Business.Exceptions;
 using Casetask.Common.Dtos.StudentDTOs;
-using Casetask.Common.Dtos.Teacher;
+using Casetask.Common.Dtos.SubjectDtos;
 using Casetask.Common.Interfaces;
 using Casetask.Common.Model;
 using System.Linq.Expressions;
@@ -13,38 +13,29 @@ public class StudentService : IStudentService
     private IMapper Mapper { get; }
     private IGenericRepository<Student> StudentRepository { get; }
     private IGenericRepository<Subject> SubjectRepository { get; }
+    private IGenericRepository<Score> ScoreRepository { get; }
 
-    public StudentService(IMapper mapper, IGenericRepository<Student> studentRepository, IGenericRepository<Subject> subjectRepository)
+    public StudentService(IMapper mapper, IGenericRepository<Student> studentRepository,
+        IGenericRepository<Subject> subjectRepository, IGenericRepository<Score> scoreRepository)
     {
         Mapper = mapper;
         StudentRepository = studentRepository;
         SubjectRepository = subjectRepository;
+        ScoreRepository = scoreRepository;
     }
 
     public async Task<int> CreateStudentAsync(StudentCreate studentCreate)
     {
         var entity = Mapper.Map<Student>(studentCreate);
 
-        List<Expression<Func<Subject, bool>>> filters = new List<Expression<Func<Subject, bool>>>();
-
-        foreach (var subject in studentCreate.Subjects)
-            filters.Add(s => s.Name == subject);
-
-        var existingSubjects = await SubjectRepository.GetFilteredAsync(filters.ToArray(), null, null);
-
-        entity.Subjects = existingSubjects;
-
         await StudentRepository.InsertAsync(entity);
 
         await StudentRepository.SaveChangesAsync();
 
-        foreach (var subject in existingSubjects)
-        {
-            subject.StudentId = entity.Id;
-            SubjectRepository.Update(subject);
-        }
-
-        await SubjectRepository.SaveChangesAsync();
+        foreach(int subjectId in studentCreate.Subjects)
+            await ScoreRepository.InsertAsync(new Score { SubjectId = subjectId, StudentId = entity.Id });
+        
+        await ScoreRepository.SaveChangesAsync();
 
         return entity.Id;
     }
@@ -66,14 +57,32 @@ public class StudentService : IStudentService
 
         if (entity == null)
             throw new StudentNotFoundException(id);
+        
+        Expression<Func<Score, bool>> filterScore;
 
-        Expression<Func<Subject, bool>> filter = s => s.StudentId == id;
+        List<Expression<Func<Subject, bool>>> filterSubjects = new List<Expression<Func<Subject, bool>>>();
 
-        var existingSubjects = await SubjectRepository.GetFilteredAsync(new[] { filter }, null, null);
+        var existingScores = await ScoreRepository.GetFilteredAsync(new[] { filterScore = s => s.StudentId == id }, null, null );
 
-        entity.Subjects = existingSubjects;
+        foreach (var score in existingScores)
+            filterSubjects.Add(sub => sub.Id == score.SubjectId);
 
-        return Mapper.Map<StudentGet>(entity);
+        var existingSubjects = await SubjectRepository.GetFilteredAsync(filterSubjects.ToArray(), null, null);
+
+
+        var studentForView = Mapper.Map<StudentGet>(entity);
+
+        studentForView.Scores = existingScores.Join(
+            existingSubjects,
+            score => score.SubjectId,
+            subject => subject.Id,
+            (score, subject) => new SubjectGetForStudent
+            {
+                SubjectName = subject.Name,
+                Score = (int)score.Value
+            });
+
+        return studentForView;
     }
 
     public async Task<List<StudentGet>> GetStudentsAsync()
@@ -82,8 +91,6 @@ public class StudentService : IStudentService
 
         Expression<Func<Subject, bool>> filter;
 
-        foreach (var student in students)
-            student.Subjects = await SubjectRepository.GetFilteredAsync(new[] { filter = s => s.StudentId == student.Id }, null, null);
 
         return Mapper.Map<List<StudentGet>>(students);
     }
