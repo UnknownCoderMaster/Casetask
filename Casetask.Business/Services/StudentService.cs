@@ -79,8 +79,8 @@ public class StudentService : IStudentService
             (score, subject) => new SubjectGetForStudent
             {
                 SubjectName = subject.Name,
-                Score = (int)score.Value
-            });
+                Score = score.Value
+            }).ToList();
 
         return studentForView;
     }

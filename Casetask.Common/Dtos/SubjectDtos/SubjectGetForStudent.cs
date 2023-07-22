@@ -1,3 +1,7 @@
 ﻿namespace Casetask.Common.Dtos.SubjectDtos;
 
-public record SubjectGetForStudent(string SubjectName, int Score);
+public class SubjectGetForStudent 
+{
+    public string? SubjectName { get; set; } 
+    public int? Score { get; set; }
+}
