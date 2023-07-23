@@ -5,6 +5,7 @@ using Casetask.Common.Dtos.SubjectDtos;
 using Casetask.Common.Interfaces;
 using Casetask.Common.Model;
 using System.Linq.Expressions;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Casetask.Business.Services;
 
@@ -58,17 +59,16 @@ public class StudentService : IStudentService
         if (entity == null)
             throw new StudentNotFoundException(id);
         
-        Expression<Func<Score, bool>> filterScore;
+        Expression<Func<Score, bool>> filterScore = s => s.StudentId == id;
 
-        List<Expression<Func<Subject, bool>>> filterSubjects = new List<Expression<Func<Subject, bool>>>();
+        Expression<Func<Subject, bool>> f;
 
-        var existingScores = await ScoreRepository.GetFilteredAsync(new[] { filterScore = s => s.StudentId == id }, null, null );
+        var existingScores = await ScoreRepository.GetFilteredAsync(new[] { filterScore }, null, null );
+
+        List<Subject> existingSubjects = new List<Subject>();
 
         foreach (var score in existingScores)
-            filterSubjects.Add(sub => sub.Id == score.SubjectId);
-
-        var existingSubjects = await SubjectRepository.GetFilteredAsync(filterSubjects.ToArray(), null, null);
-
+            existingSubjects.AddRange(await SubjectRepository.GetFilteredAsync(new[] { f = sub => sub.Id == score.SubjectId } , null, null));
 
         var studentForView = Mapper.Map<StudentGet>(entity);
 
@@ -89,10 +89,64 @@ public class StudentService : IStudentService
     {
         var students = await StudentRepository.GetAsync(null, null);
 
-        Expression<Func<Subject, bool>> filter;
+        var subjects = await SubjectRepository.GetAsync(null, null);
 
+        var scores = await ScoreRepository.GetAsync(null, null);
 
-        return Mapper.Map<List<StudentGet>>(students);
+        var studentGetView = scores.
+            Join(students, score => score.StudentId, student => student.Id, (score, student) => new
+            {
+                Id = student.Id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                PhoneNumber = student.PhoneNumber,
+                Email = student.Email,
+                BirthDate = student.BirthDate,
+                StudentRegNumber = student.StudentRegNumber,
+                subjectId = score.SubjectId, 
+                Value = score.Value
+            })
+            .Join(subjects, stu => stu.subjectId , subject => subject.Id, (stu, subject) => new
+            {
+                Id = stu.Id,
+                FirstName = stu.FirstName,
+                LastName = stu.LastName,
+                PhoneNumber = stu.PhoneNumber,
+                Email = stu.Email,
+                BirthDate = stu.BirthDate,
+                StudentRegNumber = stu.StudentRegNumber,
+                SubjectName = subject.Name,
+                Value = stu.Value
+            })
+            .GroupBy(stu => new
+            {
+                stu.Id,
+                stu.FirstName,
+                stu.LastName,
+                stu.PhoneNumber,
+                stu.Email,
+                stu.BirthDate,
+                stu.StudentRegNumber
+            })
+            .Select(groupedStu => new StudentGet
+            {
+                Id = groupedStu.Key.Id,
+                FirstName = groupedStu.Key.FirstName,
+                LastName = groupedStu.Key.LastName,
+                PhoneNumber = groupedStu.Key.PhoneNumber,
+                Email = groupedStu.Key.Email,
+                BirthDate = groupedStu.Key.BirthDate,
+                StudentRegNumber = groupedStu.Key.StudentRegNumber,
+                Scores = groupedStu.Select(stu => new SubjectGetForStudent
+                {
+                    SubjectName = stu.SubjectName,
+                    Score = stu.Value
+                }).ToList()
+            })
+            .ToList();
+
+        return studentGetView;
+        //return Mapper.Map<List<StudentGet>>(students);
     }
 
     public async Task UpdateStudentAsync(StudentUpdate studentUpdate)

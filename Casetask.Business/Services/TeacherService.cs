@@ -28,9 +28,7 @@ public class TeacherService : ITeacherService
         List<Expression<Func<Subject, bool>>> filters = new List<Expression<Func<Subject, bool>>>();
 
         foreach (var subject in teacherCreate.Subjects)
-        {
             filters.Add(s => s.Name == subject);
-        }
 
         var existingSubjects = await SubjectRepository.GetFilteredAsync(filters.ToArray(), null, null);
 
