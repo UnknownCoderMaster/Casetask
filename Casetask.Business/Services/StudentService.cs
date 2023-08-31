@@ -5,7 +5,6 @@ using Casetask.Common.Dtos.SubjectDtos;
 using Casetask.Common.Interfaces;
 using Casetask.Common.Model;
 using System.Linq.Expressions;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Casetask.Business.Services;
 
@@ -146,7 +145,6 @@ public class StudentService : IStudentService
             .ToList();
 
         return studentGetView;
-        //return Mapper.Map<List<StudentGet>>(students);
     }
 
     public async Task UpdateStudentAsync(StudentUpdate studentUpdate)

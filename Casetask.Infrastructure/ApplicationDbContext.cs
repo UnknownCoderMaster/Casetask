@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     DbSet<Teacher> Teachers { get; set; }
     DbSet<Subject> Subjects { get; set; }
     DbSet<Score> Scores { get; set; }
+    DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +21,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Teacher>().HasKey(e => e.Id);
         modelBuilder.Entity<Subject>().HasKey(e => e.Id);
         modelBuilder.Entity<Score>().HasKey(e => e.Id);
+        modelBuilder.Entity<User>().HasKey(e => e.Id);
 
         modelBuilder.Entity<Subject>()
             .HasOne(s => s.Teacher)
