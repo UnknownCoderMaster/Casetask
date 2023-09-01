@@ -19,6 +19,7 @@ public static class DIConfiguration
 		services.AddScoped<IGenericRepository<Subject>, GenericRepository<Subject>>();
 		services.AddScoped<IGenericRepository<Student>, GenericRepository<Student>>();
 		services.AddScoped<IGenericRepository<Score>, GenericRepository<Score>>();
+		services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 
 
 		//services
@@ -26,6 +27,8 @@ public static class DIConfiguration
         services.AddScoped<ITeacherService, TeacherService>();
         services.AddScoped<ISubjectService, SubjectService>();
         services.AddScoped<IStudentService, StudentService>();
+		services.AddScoped<IUserService, UserService>();
+		services.AddScoped<IAuthService, AuthService>();
     }
 
 	public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)

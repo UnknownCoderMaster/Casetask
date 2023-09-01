@@ -2,6 +2,7 @@
 using Casetask.Common.Dtos.StudentDTOs;
 using Casetask.Common.Dtos.SubjectDtos;
 using Casetask.Common.Dtos.Teacher;
+using Casetask.Common.Dtos.UserDTOs;
 using Casetask.Common.Model;
 
 namespace Casetask.Business;
@@ -26,5 +27,9 @@ public class DtoEntityMapperProfile : Profile
             .ForMember(dest => dest.Results, opt => opt.Ignore());
         CreateMap<StudentUpdate, Student>();
         CreateMap<Student, StudentGet>();
+
+        CreateMap<UserRegisterDto, User>().ReverseMap();
+        CreateMap<UserUpdateDto, User>().ReverseMap();
+        CreateMap<User, UserViewDto>().ReverseMap();
     }
 }

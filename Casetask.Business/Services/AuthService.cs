@@ -1,9 +1,11 @@
 ﻿using Casetask.Business.Exceptions;
+using Casetask.Business.Extensions;
 using Casetask.Common.Interfaces;
 using Casetask.Common.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -22,11 +24,16 @@ public class AuthService : IAuthService
     }
     public async Task<string> GenerateToken(string email, string password)
 	{
-        User user = await _userRepository.GetAsync(null, null, 
-            u => u.Email == email && u.Password.Equals(password.Encrypt()));
+        List<User> users = await _userRepository.GetFilteredAsync(
+            new Expression<Func<User, bool>>[] {
+                u => u.Email == email && u.Password.Equals(password.Encrypt())
+            },
+            null, null);
 
-        if (user is null)
-            throw new UserNotFoundException(400, "Login or Password is incorrect");
+        if (users is null)
+            throw new UserException(400, "Login or Password is incorrect");
+
+        var user = users.First();
 
         var authSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));

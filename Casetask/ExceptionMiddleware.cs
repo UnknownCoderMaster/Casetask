@@ -72,7 +72,25 @@ public class ExceptionMiddleware
             await context.Response.WriteAsync(problemDetailsJson);
         }
 
-        catch (Exception ex)
+		catch (UserException ex)
+		{
+			context.Response.ContentType = "application/problem+json";
+			context.Response.StatusCode = ( ex.Id == null ? StatusCodes.Status400BadRequest : StatusCodes.Status404NotFound);
+
+			var problemDetails = new ProblemDetails()
+			{
+				Status = context.Response.StatusCode,
+				Detail = string.Empty,
+				Instance = "",
+				Title = ex.Message,
+				Type = "Error"
+			};
+
+			var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+			await context.Response.WriteAsync(problemDetailsJson);
+		}
+
+		catch (Exception ex)
         {
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
